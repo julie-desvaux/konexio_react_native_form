@@ -14,13 +14,15 @@ class App extends Component {
     };
   }
 
-  handleSubmit(e) {
-    console.log("click button")
-    if (formValid) {
-      console.log("handleSubmit if")
+  _userSignup() {
+    console.log('email', this.state.email);
+    console.log('password', this.state.password);
+    let emailValid = this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+    let passwordValid = this.state.password.length >= 6;
+    if (!emailValid) {
       Alert.alert(
-        "Welcom",
-        this.state.mail,
+        "Erreur",
+        "Merci d\'entrer un email et un mot de passe valid",
         [
           {
             text: "Cancel",
@@ -31,12 +33,24 @@ class App extends Component {
         ],
         { cancelable: false }
       );
-      e.preventDefault();
-    } else {
-      console.log("handleSubmit else")
+    } else if (!passwordValid) {
       Alert.alert(
         "Erreur",
         "Merci d\'entrer un email et un mot de passe valid",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+        ],
+        { cancelable: false }
+      );
+    } else if (emailValid && passwordValid) {
+      Alert.alert(
+        "Welcom",
+        this.state.email,
         [
           {
             text: "Cancel",
@@ -51,29 +65,6 @@ class App extends Component {
     
   }
 
-  onChange(fieldName, value) {
-    console.log(fieldName, ' == ', value)
-    this.setState({ [fieldName]: value })
-    let fieldValidationErrors = this.state.formErrors;
-    let emailValid = this.state.emailValid;
-    let passwordValid = this.state.passwordValid;
-
-    switch(fieldName) {
-      case 'email':
-          emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-          fieldValidationErrors.email = emailValid ? 'is-valid' : ' is-invalid';
-          break;
-      case 'password':
-          passwordValid = value.length >= 6;
-          fieldValidationErrors.password = passwordValid ? 'is-valid' : ' is-invalid';
-          break;
-      default:
-          break;
-    }
-    console.log('fieldValidationErrors.email ', fieldValidationErrors.email)
-    console.log('fieldValidationErrors.password ', fieldValidationErrors.password)
-  }
-
   render() {
     const { email, password } = this.state;
 
@@ -83,19 +74,21 @@ class App extends Component {
           style={styles.input} 
           autoCorrect={false}
           placeholder="Email"
-          onChange={(e) => this.onChange('email', e.target.value)}
+          onChangeText={(text) => this.setState({email:text})}
+          value={this.state.email}
         />
         <TextInput 
           style={styles.input} 
           autoCorrect={false}
           secureTextEntry={true}
           placeholder="Password"          
-          onChange={(e) => this.onChange('password', e.target.value)}
+          onChangeText={(text) => this.setState({password:text})}
+          value={this.state.password}
         />
         <Button 
           title={"Log In"} 
           style={styles.buttonLog} 
-          onPress={() => this.handleSubmit} 
+          onPress={() => this._userSignup() } 
         />
 			</View>
     );
@@ -111,11 +104,12 @@ const styles = StyleSheet.create({
   },
   input: {
     width: 300,
-    height: 25,
-    borderColor: 'red',
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 9,
-    marginVertical: 10
+    marginVertical: 10,
+    padding: 10
   },
   buttonLog: {
     width: 300,
