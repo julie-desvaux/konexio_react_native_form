@@ -64,16 +64,29 @@ class App extends Component {
 		}
 	}
 
+	onChangeInputEmail(email) {
+		this.setState({
+			email,
+		});
+		let emailValid = this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+		if (emailValid) {
+			this.setState({ emailValid: true });
+		} else {
+			this.setState({ emailValid: false });
+		}
+	}
+
 	render() {
-		const { email, password } = this.state;
+		const { email, password, emailValid } = this.state;
 
 		return (
 			<View style={styles.container}>
 				<TextInput
-					style={styles.input}
+					autoCapitalize="none"
+					style={emailValid ? styles.inputValid : styles.input}
 					autoCorrect={false}
 					placeholder="Email"
-					onChangeText={(text) => this.setState({ email: text })}
+					onChangeText={(text) => this.onChangeInputEmail(text)}
 					value={this.state.email}
 				/>
 				<TextInput
@@ -101,6 +114,15 @@ const styles = StyleSheet.create({
 		width: 300,
 		height: 40,
 		borderColor: "gray",
+		borderWidth: 1,
+		borderRadius: 9,
+		marginVertical: 10,
+		padding: 10,
+	},
+	inputValid: {
+		width: 300,
+		height: 40,
+		borderColor: "green",
 		borderWidth: 1,
 		borderRadius: 9,
 		marginVertical: 10,
